@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/static/img/favicon.png" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Protected</title>
+  </head>
+  <body class="bg-slate-50 text-slate-900">
+    <div class="mx-auto max-w-4xl px-4 py-8">
+      <div class="mb-6 flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <img src="/static/img/InnoGen.png" alt="InnoGen" class="h-10 w-auto" />
+          <div>
+            <div class="text-sm font-semibold text-slate-800">Protected Page</div>
+            <div class="text-xs text-slate-600">Requires authentication</div>
+          </div>
+        </div>
+        <div class="flex gap-2">
+          <a href="/" class="rounded-md bg-white px-4 py-2 text-sm font-semibold text-slate-700 ring-1 ring-slate-200 hover:bg-slate-100">Home</a>
+          <a href="/logout" class="rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800">Logout</a>
+        </div>
+      </div>
+
+      <div class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+        <div class="text-sm font-semibold text-slate-900">Authenticated user</div>
+        <pre class="mt-3 overflow-x-auto rounded-lg bg-slate-900 p-4 text-xs text-slate-100">{{ user|tojson(indent=2) }}</pre>
+
+        <div class="mt-5 flex gap-2">
+          <a href="/hr-access" class="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">Go to HR Access</a>
+          <a href="/status" class="rounded-md bg-white px-4 py-2 text-sm font-semibold text-slate-700 ring-1 ring-slate-200 hover:bg-slate-100">Status</a>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/static/img/favicon.png" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>HR Clearance - History</title>
+  </head>
+  <body class="bg-slate-50 text-slate-900">
+    <div class="mx-auto max-w-6xl px-4 py-8">
+      <div class="mb-6 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <img src="/static/img/InnoGen.png" alt="InnoGen" class="h-10 w-auto" />
+          <div>
+            <div class="text-sm font-semibold text-slate-800">Clearance History</div>
+            <div class="text-xs text-slate-600">Completed and Printed Records</div>
+          </div>
+        </div>
+        <div class="flex gap-2">
+          <a href="/status" class="rounded-md bg-white px-4 py-2 text-sm font-semibold text-slate-700 ring-1 ring-slate-200 hover:bg-slate-100">Active Status</a>
+          <a href="/" class="rounded-md bg-white px-4 py-2 text-sm font-semibold text-slate-700 ring-1 ring-slate-200 hover:bg-slate-100">Create New</a>
+          <button id="changePasswordBtn" class="rounded-md bg-white px-4 py-2 text-sm font-semibold text-slate-700 ring-1 ring-slate-200 hover:bg-slate-100">Change Password</button>
+          <button id="sessionBtn" class="rounded-md bg-white px-4 py-2 text-sm font-semibold text-slate-700 ring-1 ring-slate-200 hover:bg-slate-100">Session</button>
+        </div>
+      </div>
+
+      <pre id="sessionOut" class="mb-6 hidden overflow-x-auto rounded-lg bg-slate-900 p-4 text-xs text-slate-100"></pre>
+
+      <div class="grid gap-6 lg:grid-cols-3">
+        <div class="rounded-xl bg-white shadow-sm ring-1 ring-slate-200">
+          <div class="border-b border-slate-200 px-5 py-4">
+            <div class="text-sm font-semibold text-slate-800">Pending Clearances</div>
+            <div class="text-xs text-slate-600">Active but not yet completed</div>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="min-w-full text-sm">
+              <thead class="bg-slate-50">
+                <tr>
+                  <th class="px-4 py-3 text-left font-semibold text-slate-700">Employee</th>
+                  <th class="px-4 py-3 text-left font-semibold text-slate-700">Action</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                {% for c in pending %}
+                  <tr>
+                    <td class="px-4 py-3">
+                      <div class="font-semibold text-slate-900">{{ c.employee_name }} ({{ c.employee_id }})</div>
+                      <div class="text-xs text-slate-600">{{ c.division_department }}</div>
+                    </td>
+                    <td class="px-4 py-3">
+                      <div class="flex gap-2">
+                        <a href="/edit/{{ c.id }}" class="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-blue-700">Edit</a>
+                        <form method="post" action="/delete/{{ c.id }}" onsubmit="return confirm('Are you sure you want to delete this pending clearance?');">
+                          <button type="submit" class="rounded-md bg-red-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-red-700">Delete</button>
+                        </form>
+                      </div>
+                    </td>
+                  </tr>
+                {% else %}
+                  <tr>
+                    <td colspan="2" class="px-4 py-6 text-center text-sm text-slate-600">No pending clearances.</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="rounded-xl bg-white shadow-sm ring-1 ring-slate-200">
+          <div class="border-b border-slate-200 px-5 py-4">
+            <div class="text-sm font-semibold text-slate-800">Newly Completed</div>
+            <div class="text-xs text-slate-600">Completed but not printed yet</div>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="min-w-full text-sm">
+              <thead class="bg-slate-50">
+                <tr>
+                  <th class="px-4 py-3 text-left font-semibold text-slate-700">Employee</th>
+                  <th class="px-4 py-3 text-left font-semibold text-slate-700">Completed</th>
+                  <th class="px-4 py-3 text-left font-semibold text-slate-700">Action</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                {% for c in newly_completed %}
+                  <tr>
+                    <td class="px-4 py-3">
+                      <div class="font-semibold text-slate-900">{{ c.employee_name }} ({{ c.employee_id }})</div>
+                      <div class="text-xs text-slate-600">{{ c.division_department }} • {{ c.position }}</div>
+                    </td>
+                    <td class="px-4 py-3 text-slate-700">{{ format_ph(c.completed_at) }}</td>
+                    <td class="px-4 py-3">
+                      <a href="/print/{{ c.id }}" class="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-blue-700">Print</a>
+                    </td>
+                  </tr>
+                {% else %}
+                  <tr>
+                    <td colspan="3" class="px-4 py-6 text-center text-sm text-slate-600">No newly completed clearances.</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="rounded-xl bg-white shadow-sm ring-1 ring-slate-200">
+          <div class="border-b border-slate-200 px-5 py-4">
+            <div class="text-sm font-semibold text-slate-800">Printed</div>
+            <div class="text-xs text-slate-600">Re-print any completed clearance</div>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="min-w-full text-sm">
+              <thead class="bg-slate-50">
+                <tr>
+                  <th class="px-4 py-3 text-left font-semibold text-slate-700">Employee</th>
+                  <th class="px-4 py-3 text-left font-semibold text-slate-700">Last Printed</th>
+                  <th class="px-4 py-3 text-left font-semibold text-slate-700">Action</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                {% for c in printed %}
+                  <tr>
+                    <td class="px-4 py-3">
+                      <div class="font-semibold text-slate-900">{{ c.employee_name }} ({{ c.employee_id }})</div>
+                      <div class="text-xs text-slate-600">{{ c.division_department }} • {{ c.position }}</div>
+                      <div class="mt-1 text-xs text-slate-600">Printed {{ c.print_count }} time(s)</div>
+                    </td>
+                    
+                    <td class="px-4 py-3 text-slate-700">{{ format_ph(c.last_printed_at) }}</td>
+                    <td class="px-4 py-3">
+                      <a href="/print/{{ c.id }}" class="rounded-md bg-slate-900 px-3 py-1.5 text-sm font-semibold text-white hover:bg-slate-800">Print</a>
+                    </td>
+                  </tr>
+                {% else %}
+                  <tr>
+                    <td colspan="4" class="px-4 py-6 text-center text-sm text-slate-600">No printed clearances yet.</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 rounded-xl bg-white shadow-sm ring-1 ring-slate-200">
+        <div class="border-b border-slate-200 px-5 py-4">
+          <div class="text-sm font-semibold text-slate-800">Email Notifications</div>
+          <div class="text-xs text-slate-600">Latest department notification attempts</div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm">
+            <thead class="bg-slate-50">
+              <tr>
+                <th class="px-4 py-3 text-left font-semibold text-slate-700">Time</th>
+                <th class="px-4 py-3 text-left font-semibold text-slate-700">Department</th>
+                <th class="px-4 py-3 text-left font-semibold text-slate-700">Recipient</th>
+                <th class="px-4 py-3 text-left font-semibold text-slate-700">Status</th>
+                <th class="px-4 py-3 text-left font-semibold text-slate-700">Error</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              {% for log in email_logs %}
+                <tr>
+                  <td class="px-4 py-3 text-slate-700">{{ format_ph(log.sent_at) }}</td>
+                  <td class="px-4 py-3">
+                    <div class="font-semibold text-slate-900">{{ log.department.name if log.department else '-' }}</div>
+                  </td>
+                  <td class="px-4 py-3 text-slate-700">{{ log.to_email }}</td>
+                  <td class="px-4 py-3">
+                    {% if log.status == 'sent' %}
+                      <span class="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200">sent</span>
+                    {% elif log.status == 'failed' %}
+                      <span class="rounded-full bg-red-50 px-2.5 py-1 text-xs font-semibold text-red-700 ring-1 ring-red-200">failed</span>
+                    {% else %}
+                      <span class="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700 ring-1 ring-slate-200">{{ log.status }}</span>
+                    {% endif %}
+                  </td>
+                  <td class="px-4 py-3 text-xs text-slate-600">{{ log.error or '-' }}</td>
+                </tr>
+              {% else %}
+                <tr>
+                  <td colspan="5" class="px-4 py-6 text-center text-sm text-slate-600">No email sends recorded yet.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="mt-6 rounded-xl bg-white shadow-sm ring-1 ring-slate-200">
+        <div class="border-b border-slate-200 px-5 py-4">
+          <div class="text-sm font-semibold text-slate-800">Recent Sign-Ins</div>
+          <div class="text-xs text-slate-600">Latest successful authentication events</div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm">
+            <thead class="bg-slate-50">
+              <tr>
+                <th class="px-4 py-3 text-left font-semibold text-slate-700">Time</th>
+                <th class="px-4 py-3 text-left font-semibold text-slate-700">Provider</th>
+                <th class="px-4 py-3 text-left font-semibold text-slate-700">Account</th>
+                <th class="px-4 py-3 text-left font-semibold text-slate-700">IP Address</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              {% for log in sign_in_logs %}
+                <tr>
+                  <td class="px-4 py-3 text-slate-700">{{ format_ph(log.signed_in_at) }}</td>
+                  <td class="px-4 py-3">
+                    <span class="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold uppercase tracking-wide text-slate-700">{{ log.provider }}</span>
+                  </td>
+                  <td class="px-4 py-3">
+                    <div class="font-semibold text-slate-900">{{ log.email or log.username or "Unknown" }}</div>
+                    {% if log.domain %}
+                      <div class="text-xs text-slate-600">{{ log.domain }}</div>
+                    {% endif %}
+                  </td>
+                  <td class="px-4 py-3 text-slate-700">{{ log.ip_address or "-" }}</td>
+                </tr>
+              {% else %}
+                <tr>
+                  <td colspan="4" class="px-4 py-6 text-center text-sm text-slate-600">No sign-in activity recorded yet.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div id="changePasswordModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/40 px-4">
+      <div class="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <div class="text-base font-semibold text-slate-900">Change HR Access Password</div>
+            <div class="mt-1 text-sm text-slate-600">Update your HR Access password.</div>
+          </div>
+          <button type="button" id="closePasswordModalBtn" class="rounded-md p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-800">✕</button>
+        </div>
+        <div id="changePasswordError" class="mt-4 hidden rounded-md bg-red-50 px-3 py-2 text-sm text-red-700 ring-1 ring-red-200"></div>
+        <div id="changePasswordSuccess" class="mt-4 hidden rounded-md bg-emerald-50 px-3 py-2 text-sm text-emerald-700 ring-1 ring-emerald-200"></div>
+        <form id="changePasswordForm" class="mt-4 space-y-4">
+          <label class="block text-xs font-semibold text-slate-900">
+            CURRENT PASSWORD
+            <input id="currentPasswordInput" type="password" class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm" required />
+          </label>
+          <label class="block text-xs font-semibold text-slate-900">
+            NEW PASSWORD
+            <input id="newPasswordInput" type="password" class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm" required />
+          </label>
+          <label class="block text-xs font-semibold text-slate-900">
+            CONFIRM NEW PASSWORD
+            <input id="confirmPasswordInput" type="password" class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm" required />
+          </label>
+          <div class="flex justify-end gap-2">
+            <button type="button" id="cancelPasswordModalBtn" class="rounded-md bg-white px-4 py-2 text-sm font-semibold text-slate-700 ring-1 ring-slate-300 hover:bg-slate-50">Cancel</button>
+            <button type="submit" class="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">Save Password</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <script>
+      (function () {
+        const btn = document.getElementById('sessionBtn');
+        const out = document.getElementById('sessionOut');
+        const changePasswordBtn = document.getElementById('changePasswordBtn');
+        const changePasswordModal = document.getElementById('changePasswordModal');
+        const closePasswordModalBtn = document.getElementById('closePasswordModalBtn');
+        const cancelPasswordModalBtn = document.getElementById('cancelPasswordModalBtn');
+        const changePasswordForm = document.getElementById('changePasswordForm');
+        const changePasswordError = document.getElementById('changePasswordError');
+        const changePasswordSuccess = document.getElementById('changePasswordSuccess');
+        const currentPasswordInput = document.getElementById('currentPasswordInput');
+        const newPasswordInput = document.getElementById('newPasswordInput');
+        const confirmPasswordInput = document.getElementById('confirmPasswordInput');
+        if (!btn || !out) return;
+        const SSO_BASE_URL = {{ sso_base_url|tojson }};
+        let visible = false;
+
+        btn.addEventListener('click', async () => {
+          visible = !visible;
+          out.classList.toggle('hidden', !visible);
+          if (!visible) return;
+          out.textContent = 'Loading…';
+          try {
+            const res = await fetch(SSO_BASE_URL + '/api/v1/verify-session', { credentials: 'include' });
+            const json = await res.json().catch(() => ({}));
+            out.textContent = JSON.stringify(json, null, 2);
+          } catch (e) {
+            out.textContent = String(e && e.message ? e.message : e);
+          }
+        });
+
+        function openPasswordModal() {
+          changePasswordError.classList.add('hidden');
+          changePasswordSuccess.classList.add('hidden');
+          changePasswordError.textContent = '';
+          changePasswordSuccess.textContent = '';
+          changePasswordForm.reset();
+          changePasswordModal.classList.remove('hidden');
+          changePasswordModal.classList.add('flex');
+          currentPasswordInput.focus();
+        }
+
+        function closePasswordModal() {
+          changePasswordModal.classList.add('hidden');
+          changePasswordModal.classList.remove('flex');
+        }
+
+        changePasswordBtn?.addEventListener('click', openPasswordModal);
+        closePasswordModalBtn?.addEventListener('click', closePasswordModal);
+        cancelPasswordModalBtn?.addEventListener('click', closePasswordModal);
+        changePasswordModal?.addEventListener('click', (event) => {
+          if (event.target === changePasswordModal) {
+            closePasswordModal();
+          }
+        });
+
+        changePasswordForm?.addEventListener('submit', async (event) => {
+          event.preventDefault();
+          changePasswordError.classList.add('hidden');
+          changePasswordSuccess.classList.add('hidden');
+
+          try {
+            const response = await fetch('/hr/change-password', {
+              method: 'POST',
+              headers: { 'content-type': 'application/json' },
+              body: JSON.stringify({
+                current_password: currentPasswordInput.value,
+                new_password: newPasswordInput.value,
+                confirm_password: confirmPasswordInput.value,
+              }),
+            });
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok) {
+              throw new Error(data.detail || `Request failed (${response.status})`);
+            }
+            changePasswordSuccess.textContent = 'Password updated successfully.';
+            changePasswordSuccess.classList.remove('hidden');
+            changePasswordForm.reset();
+          } catch (error) {
+            changePasswordError.textContent = String(error && error.message ? error.message : error);
+            changePasswordError.classList.remove('hidden');
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>

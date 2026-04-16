@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/static/img/favicon.png" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Login</title>
+  </head>
+  <body class="bg-slate-50 text-slate-900">
+    <div class="mx-auto max-w-xl px-4 py-10">
+      <div class="mb-6 flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <img src="/static/img/InnoGen.png" alt="InnoGen" class="h-10 w-auto" />
+          <div>
+            <div class="text-sm font-semibold text-slate-800">HR Clearance</div>
+            <div class="text-xs text-slate-600">Sign in with Innogen Universal SSO</div>
+          </div>
+        </div>
+        <button id="sessionBtn" class="rounded-md bg-white px-3 py-2 text-xs font-semibold text-slate-700 ring-1 ring-slate-200 hover:bg-slate-100">Session status</button>
+      </div>
+
+      <div class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+        <div class="text-sm font-semibold text-slate-800">Corporate Email</div>
+        <div class="mt-1 text-xs text-slate-600">Enter your corporate email to choose the right sign-in method.</div>
+
+        <form id="emailForm" class="mt-4 space-y-3">
+          <input id="emailInput" type="email" autocomplete="email" required class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm" placeholder="name@innogen-pharma.com" />
+          <button id="continueBtn" type="submit" class="w-full rounded-md bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700">Continue</button>
+        </form>
+
+        <div id="errorBox" class="mt-4 hidden rounded-md bg-red-50 px-3 py-2 text-sm text-red-800 ring-1 ring-red-200"></div>
+
+        <div id="actions" class="mt-5 hidden space-y-4">
+          <div class="rounded-lg border border-slate-200 bg-slate-50 p-4">
+            <div class="text-xs font-semibold text-slate-700">Detected</div>
+            <div id="detectedLine" class="mt-1 text-sm font-semibold text-slate-900"></div>
+          </div>
+
+          <div class="grid gap-2">
+            <button id="googleBtn" type="button" class="hidden flex items-center justify-center gap-3 rounded-md bg-white px-4 py-2.5 text-sm font-semibold text-slate-800 ring-1 ring-slate-300 hover:bg-slate-50">
+              <svg aria-hidden="true" viewBox="0 0 24 24" class="h-5 w-5">
+                <path fill="#EA4335" d="M12 10.2v3.9h5.5c-.2 1.3-1.6 3.9-5.5 3.9-3.3 0-6-2.8-6-6.2s2.7-6.2 6-6.2c1.9 0 3.2.8 4 1.5l2.7-2.6C17 2.8 14.7 2 12 2 6.9 2 2.8 6.3 2.8 11.8S6.9 21.5 12 21.5c6.1 0 9.1-4.3 9.1-6.5 0-.4 0-.7-.1-1H12Z"/>
+                <path fill="#4285F4" d="M21.1 11H12v3.9h5.5c-.3 1.4-1.4 2.4-2.8 3.1l3.4 2.6c2-1.8 3.1-4.5 3.1-7.7 0-.4 0-.7-.1-1Z"/>
+                <path fill="#FBBC05" d="M5.8 14.2c-.2-.6-.3-1.3-.3-2s.1-1.4.3-2L2.3 7.5C1.5 9 1 10.4 1 12.2s.5 3.2 1.3 4.7l3.5-2.7Z"/>
+                <path fill="#34A853" d="M12 22c2.7 0 5-.9 6.7-2.5l-3.4-2.6c-.9.6-2 .9-3.3.9-2.5 0-4.7-1.7-5.4-4l-3.5 2.7C4.8 19.9 8.1 22 12 22Z"/>
+              </svg>
+              <span>Sign in with Google</span>
+            </button>
+            <button id="appleBtn" type="button" class="flex items-center justify-center gap-3 rounded-md bg-black px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-900">
+              <svg aria-hidden="true" viewBox="0 0 24 24" class="h-5 w-5 fill-current">
+                <path d="M16.7 12.7c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-2-.9-3.3-.9-1.7 0-3.3 1-4.2 2.6-1.8 3.1-.5 7.7 1.3 10.2.9 1.2 1.9 2.6 3.3 2.5 1.3-.1 1.8-.8 3.4-.8 1.6 0 2 .8 3.4.8 1.4 0 2.3-1.2 3.2-2.4 1-1.4 1.4-2.8 1.4-2.9-.1 0-3.4-1.3-3.4-4.4Zm-2.4-7c.7-.9 1.1-2.1 1-3.3-1 .1-2.3.7-3 1.6-.6.7-1.2 1.9-1 3 .9.1 2.2-.5 3-1.3Z"/>
+              </svg>
+              <span>Sign in with Apple</span>
+            </button>
+          </div>
+
+          <div id="passwordArea" class="hidden rounded-lg border border-slate-200 p-4">
+            <div class="text-sm font-semibold text-slate-800">Password sign-in</div>
+            <div id="pwHint" class="mt-1 text-xs text-slate-600"></div>
+
+            <form id="createPwForm" class="mt-4 hidden space-y-3">
+              <input id="createPw" type="password" autocomplete="new-password" class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm" placeholder="Create app password" />
+              <button type="submit" class="w-full rounded-md bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-800">Create App Password</button>
+            </form>
+
+            <form id="loginPwForm" class="mt-4 hidden space-y-3">
+              <input id="loginPw" type="password" autocomplete="current-password" class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm" placeholder="Enter app password" />
+              <button type="submit" class="w-full rounded-md bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-800">Password Login</button>
+            </form>
+          </div>
+        </div>
+
+        <pre id="sessionOut" class="mt-4 hidden overflow-x-auto rounded-lg bg-slate-900 p-4 text-xs text-slate-100"></pre>
+        <div class="mt-4 text-xs text-slate-500">
+          Single Sign-On (SSO): {{ sso_base_url }} 
+        </div>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        const SSO_BASE_URL = {{ sso_base_url|tojson }};
+        const APP_HOST = "https://clearance.innogen.local";
+        const NEXT_PATH = {{ next|tojson }};
+
+        const emailForm = document.getElementById('emailForm');
+        const emailInput = document.getElementById('emailInput');
+        const continueBtn = document.getElementById('continueBtn');
+        const errorBox = document.getElementById('errorBox');
+        const actions = document.getElementById('actions');
+        const detectedLine = document.getElementById('detectedLine');
+        const googleBtn = document.getElementById('googleBtn');
+        const appleBtn = document.getElementById('appleBtn');
+        const passwordArea = document.getElementById('passwordArea');
+        const pwHint = document.getElementById('pwHint');
+        const createPwForm = document.getElementById('createPwForm');
+        const createPw = document.getElementById('createPw');
+        const loginPwForm = document.getElementById('loginPwForm');
+        const loginPw = document.getElementById('loginPw');
+        const sessionBtn = document.getElementById('sessionBtn');
+        const sessionOut = document.getElementById('sessionOut');
+
+        function setError(msg) {
+          if (!msg) {
+            errorBox.classList.add('hidden');
+            errorBox.textContent = '';
+            return;
+          }
+          errorBox.textContent = msg;
+          errorBox.classList.remove('hidden');
+        }
+
+        function setLoading(on) {
+          continueBtn.disabled = on;
+          continueBtn.textContent = on ? 'Loading…' : 'Continue';
+        }
+
+        function buildReturnTo() {
+          return APP_HOST + '/sso-callback';
+        }
+
+        async function ssoGet(path) {
+          const res = await fetch(SSO_BASE_URL + path, { credentials: 'include' });
+          if (!res.ok) {
+            const t = await res.text().catch(() => '');
+            throw new Error(t || `Request failed (${res.status})`);
+          }
+          return await res.json();
+        }
+
+        async function ssoPost(path, payload) {
+          const res = await fetch(SSO_BASE_URL + path, {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+          if (!res.ok) {
+            const t = await res.text().catch(() => '');
+            throw new Error(t || `Request failed (${res.status})`);
+          }
+          return await res.json().catch(() => ({}));
+        }
+
+        function showActions() {
+          actions.classList.remove('hidden');
+        }
+
+        function showEmailForm() {
+          emailForm.classList.remove('hidden');
+        }
+
+        function hideEmailForm() {
+          emailForm.classList.add('hidden');
+        }
+
+        function hidePassword() {
+          passwordArea.classList.add('hidden');
+          createPwForm.classList.add('hidden');
+          loginPwForm.classList.add('hidden');
+        }
+
+        function showPassword(mode, hintText) {
+          passwordArea.classList.remove('hidden');
+          pwHint.textContent = hintText || '';
+          createPwForm.classList.toggle('hidden', mode !== 'create');
+          loginPwForm.classList.toggle('hidden', mode !== 'login');
+        }
+
+        function startGoogle(email) {
+          sessionStorage.setItem('hrClearanceProvider', 'google');
+          const returnTo = buildReturnTo();
+          const url = new URL(SSO_BASE_URL + '/api/v1/oauth/google/start');
+          url.searchParams.set('email', email);
+          url.searchParams.set('return_to', returnTo);
+          window.location.href = url.toString();
+        }
+
+        function startApple() {
+          sessionStorage.setItem('hrClearanceProvider', 'apple');
+          const returnTo = buildReturnTo();
+          const url = new URL(SSO_BASE_URL + '/api/v1/oauth/apple/start');
+          url.searchParams.set('return_to', returnTo);
+          window.location.href = url.toString();
+        }
+
+        async function configureForEmail(email) {
+          setError('');
+          showEmailForm();
+          hidePassword();
+          googleBtn.classList.add('hidden');
+          appleBtn.classList.add('hidden');
+          showActions();
+
+          const method = await ssoGet(`/api/v1/auth/method?email=${encodeURIComponent(email)}`);
+          const domain = (method.domain || '').toLowerCase();
+          const methods = Array.isArray(method.methods) ? method.methods : [];
+
+          detectedLine.textContent = `${method.email} (${domain || 'unknown'})`;
+
+          if (domain === 'innogen-pharma.com' && methods.includes('google')) {
+            googleBtn.classList.remove('hidden');
+            googleBtn.onclick = () => startGoogle(email);
+            appleBtn.classList.remove('hidden');
+            appleBtn.onclick = () => startApple();
+            return;
+          }
+
+          if (domain === 'innogen-pharma.ph') {
+            const pwStatus = await ssoGet(`/api/v1/auth/password/status?email=${encodeURIComponent(email)}`);
+            const hasPassword = Boolean(pwStatus && pwStatus.has_password);
+
+            if (!hasPassword) {
+              const mailbox = await ssoGet(`/api/v1/cpanel/mailbox-exists?email=${encodeURIComponent(email)}`);
+              if (!mailbox || mailbox.exists === false) {
+                setError('Mailbox not found. Please contact IT.');
+                return;
+              }
+            }
+
+            hideEmailForm();
+            showPassword(
+              hasPassword ? 'login' : 'create',
+              hasPassword ? 'Enter your app password.' : 'Create an app password for SSO sign-in.'
+            );
+            return;
+          }
+
+          setError('No supported sign-in method for this email.');
+        }
+
+        emailForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const email = String(emailInput.value || '').trim().toLowerCase();
+          if (!email) return;
+          setLoading(true);
+          try {
+            await configureForEmail(email);
+          } catch (err) {
+            setError(String(err && err.message ? err.message : err));
+          } finally {
+            setLoading(false);
+          }
+        });
+
+        createPwForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const email = String(emailInput.value || '').trim().toLowerCase();
+          const password = String(createPw.value || '');
+          if (!email || !password) return;
+          setError('');
+          try {
+            await ssoPost('/api/v1/auth/password/create', { email, password });
+            await ssoPost('/api/v1/auth/password/login', { email, password });
+            sessionStorage.setItem('hrClearanceProvider', 'password');
+            window.location.href = `/sso-callback`;
+          } catch (err) {
+            setError(String(err && err.message ? err.message : err));
+          }
+        });
+
+        loginPwForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const email = String(emailInput.value || '').trim().toLowerCase();
+          const password = String(loginPw.value || '');
+          if (!email || !password) return;
+          setError('');
+          try {
+            await ssoPost('/api/v1/auth/password/login', { email, password });
+            sessionStorage.setItem('hrClearanceProvider', 'password');
+            window.location.href = `/sso-callback`;
+          } catch (err) {
+            setError(String(err && err.message ? err.message : err));
+          }
+        });
+
+        sessionBtn.addEventListener('click', async () => {
+          sessionOut.classList.remove('hidden');
+          sessionOut.textContent = 'Loading…';
+          try {
+            const data = await ssoGet('/api/v1/verify-session');
+            sessionOut.textContent = JSON.stringify(data, null, 2);
+          } catch (err) {
+            sessionOut.textContent = String(err && err.message ? err.message : err);
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>

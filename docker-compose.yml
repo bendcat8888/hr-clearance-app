@@ -1,0 +1,48 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: hr_db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: clearance_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d clearance_db -h localhost || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    restart: unless-stopped
+
+  app:
+    build: .
+    container_name: hr_api
+    ports:
+      - "8518:8518"
+    volumes:
+      - .:/app
+    environment:
+      DATABASE_URL: postgresql+asyncpg://user:password123@db:5432/clearance_db
+      HR_SESSION_SECRET: ${HR_SESSION_SECRET:-}
+      APP_HOST: ${APP_HOST:-http://localhost:8518}
+      SSO_BASE_URL: ${SSO_BASE_URL:-https://sso.innogen-pharma.com}
+      ENABLE_LOCAL_HR_LOGIN: ${ENABLE_LOCAL_HR_LOGIN:-0}
+      COOKIE_HTTPS_ONLY: ${COOKIE_HTTPS_ONLY:-0}
+      SMTP_HOST: ${SMTP_HOST:-smtp.gmail.com}
+      SMTP_PORT: ${SMTP_PORT:-465}
+      SMTP_USE_SSL: ${SMTP_USE_SSL:-1}
+      SMTP_USERNAME: ${SMTP_USERNAME:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_FROM: ${SMTP_FROM:-}
+      SMTP_FROM_NAME: ${SMTP_FROM_NAME:-HR Clearance}
+      EMAIL_NOTIFICATIONS_ENABLED: ${EMAIL_NOTIFICATIONS_ENABLED:-1}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

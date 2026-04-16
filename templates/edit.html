@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/static/img/favicon.png" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>HR Clearance - Edit</title>
+  </head>
+  <body class="bg-slate-50 text-slate-900">
+    <div class="mx-auto max-w-6xl px-4 py-8">
+      <div class="mb-6 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <img src="/static/img/InnoGen.png" alt="InnoGen" class="h-10 w-auto" />
+          <div class="text-sm text-slate-600">Dynamic HR Clearance System</div>
+        </div>
+        <div class="flex gap-2">
+          <a href="/history" class="rounded-md bg-white px-4 py-2 text-sm font-semibold text-slate-700 ring-1 ring-slate-200 hover:bg-slate-100">Cancel / Back</a>
+        </div>
+      </div>
+
+      <div class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+        <div class="mb-4 text-center">
+          <div class="text-sm font-semibold tracking-wide text-slate-700">EDIT CLEARANCE: {{ clearance.employee_name }}</div>
+        </div>
+
+        <form method="post" action="/edit/{{ clearance.id }}" class="space-y-6">
+          <div class="grid gap-4 lg:grid-cols-2">
+            <div class="rounded-lg border border-slate-900">
+              <div class="grid grid-cols-1">
+                <div class="border-b border-slate-900 p-3">
+                  <div class="grid gap-2 md:grid-cols-2">
+                    <label class="text-xs font-semibold text-slate-900">
+                      EMPLOYEE ID
+                      <input name="employee_id" value="{{ clearance.employee_id }}" required class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm" placeholder="e.g. EMP-001" />
+                    </label>
+                    <label class="text-xs font-semibold text-slate-900">
+                      EMPLOYEE'S NAME
+                      <input name="employee_name" value="{{ clearance.employee_name }}" required class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm" placeholder="Full name" />
+                    </label>
+                  </div>
+                </div>
+                <div class="border-b border-slate-900 p-3">
+                  <div class="grid gap-2 md:grid-cols-2">
+                    <label class="text-xs font-semibold text-slate-900">
+                      POSITION
+                      <input id="positionInput" name="position" value="{{ clearance.position }}" required class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm" placeholder="Position" />
+                    </label>
+                    <label class="text-xs font-semibold text-slate-900">
+                      DIVISION/DEPARTMENT
+                      <input name="division_department" value="{{ clearance.division_department }}" required class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm" placeholder="e.g. BU4 - SALES" />
+                    </label>
+                  </div>
+                </div>
+                <div class="border-b border-slate-900 p-3">
+                  <div class="grid gap-2 md:grid-cols-2">
+                    <label class="text-xs font-semibold text-slate-900">
+                      DATE HIRED
+                      <input name="date_hired" value="{{ clearance.date_hired or '' }}" class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm" placeholder="MM/DD/YYYY" />
+                    </label>
+                    <label class="text-xs font-semibold text-slate-900">
+                      DATE SEPARATED
+                      <input name="date_separated" value="{{ clearance.date_separated or '' }}" class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm" placeholder="MM/DD/YYYY" />
+                    </label>
+                  </div>
+                </div>
+                <div class="p-3">
+                  <div class="grid gap-2 md:grid-cols-2">
+                    <label class="text-xs font-semibold text-slate-900">
+                      DATE PREPARED
+                      <input name="date_prepared" value="{{ clearance.date_prepared or '' }}" class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm" />
+                    </label>
+                    <label class="text-xs font-semibold text-slate-900">
+                      REASON FOR SEPARATION
+                      <input name="reason_for_separation" value="{{ clearance.reason_for_separation or '' }}" class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm" placeholder="e.g. Resignation" />
+                    </label>
+                  </div>
+                  <div class="mt-3 grid gap-3 md:grid-cols-2">
+                    <div>
+                      <div class="text-xs font-semibold text-slate-900">PAYROLL TYPE</div>
+                      <div class="mt-2 flex flex-wrap gap-3 text-sm">
+                        <label class="flex items-center gap-2"><input type="radio" name="payroll_type" value="Probationary" {% if clearance.payroll_type == 'Probationary' %}checked{% endif %} class="h-4 w-4" /> Probationary</label>
+                        <label class="flex items-center gap-2"><input type="radio" name="payroll_type" value="Regular" {% if clearance.payroll_type == 'Regular' %}checked{% endif %} class="h-4 w-4" /> Regular</label>
+                        <label class="flex items-center gap-2"><input type="radio" name="payroll_type" value="Casual" {% if clearance.payroll_type == 'Casual' %}checked{% endif %} class="h-4 w-4" /> Casual</label>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="text-xs font-semibold text-slate-900">CLASS</div>
+                      <div class="mt-2 flex flex-wrap gap-3 text-sm">
+                        <label class="flex items-center gap-2"><input type="radio" name="payroll_class" value="Confidential" {% if clearance.payroll_class == 'Confidential' %}checked{% endif %} class="h-4 w-4" /> Confidential</label>
+                        <label class="flex items-center gap-2"><input type="radio" name="payroll_class" value="Executive" {% if clearance.payroll_class == 'Executive' %}checked{% endif %} class="h-4 w-4" /> Executive</label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="rounded-lg border border-slate-900">
+              <div class="border-b border-slate-900 p-3">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <div class="text-xs font-semibold text-slate-900">APPROVER DEPARTMENTS</div>
+                    <div class="mt-1 text-xs text-slate-600">Select which departments will sign for this clearance.</div>
+                  </div>
+                  <button type="button" id="addDepartmentBtn" class="rounded-md bg-slate-900 px-3 py-2 text-xs font-semibold text-white hover:bg-slate-800">Add</button>
+                </div>
+              </div>
+              <div class="p-3">
+                <div id="departmentGrid" class="grid gap-2 md:grid-cols-2">
+                  {% for dept in departments %}
+                    <div class="department-card flex items-start gap-3 rounded-md border border-slate-200 bg-white px-3 py-2 hover:bg-slate-50" data-dept-id="{{ dept.id }}" data-dept-name="{{ dept.name }}" data-dept-email="{{ dept.email or '' }}">
+                      <input type="checkbox" name="department_ids" value="{{ dept.id }}" data-dept-name="{{ dept.name }}" {% if dept.id in selected_dept_ids %}checked{% endif %} class="mt-1 h-4 w-4 shrink-0" />
+                      <div class="min-w-0 flex-1">
+                        <div class="text-sm font-semibold text-slate-800">{{ dept.name }}</div>
+                        <div class="dept-email mt-1 text-xs text-slate-500">{{ dept.email or 'No email set' }}</div>
+                      </div>
+                      <button type="button" class="edit-department-btn rounded-md p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-800" aria-label="Edit department">
+                        <svg viewBox="0 0 20 20" class="h-4 w-4 fill-current">
+                          <path d="M14.7 2.8a1 1 0 0 1 1.4 0l1.1 1.1a1 1 0 0 1 0 1.4l-8.6 8.6-3.2.7.7-3.2 8.6-8.6ZM5.7 12.9l1.4 1.4-.2.8-.8.2-.4-.4.2-.8-.2.8-.4-.4.4-1.6Z"/>
+                          <path d="M3 16.5h14v1H3z"/>
+                        </svg>
+                      </button>
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-lg border border-slate-900">
+            <div class="border-b border-slate-900 p-3">
+              <div class="text-xs font-semibold text-slate-900">REMARKS</div>
+            </div>
+            <div class="p-3">
+              <textarea name="remarks" rows="5" class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm" placeholder="Optional remarks">{{ clearance.remarks or '' }}</textarea>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div class="text-xs text-slate-600">Note: Unchecking a department will remove any existing signature from them.</div>
+            <button type="submit" class="rounded-md bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="departmentModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/40 px-4">
+      <div class="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <div id="departmentModalTitle" class="text-base font-semibold text-slate-900">Add Department</div>
+            <div class="mt-1 text-sm text-slate-600">Update the department name and approver email.</div>
+          </div>
+          <button type="button" id="closeDepartmentModalBtn" class="rounded-md p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-800">✕</button>
+        </div>
+
+        <div id="departmentModalError" class="mt-4 hidden rounded-md bg-red-50 px-3 py-2 text-sm text-red-700 ring-1 ring-red-200"></div>
+
+        <form id="departmentModalForm" class="mt-4 space-y-4">
+          <label class="block text-xs font-semibold text-slate-900">
+            DEPARTMENT
+            <input id="departmentNameInput" class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm" required />
+          </label>
+          <label class="block text-xs font-semibold text-slate-900">
+            EMAIL
+            <input id="departmentEmailInput" type="email" class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm" placeholder="department@example.com" />
+          </label>
+          <div class="flex items-center justify-between gap-2">
+            <button type="button" id="deleteDepartmentBtn" class="hidden rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700">Remove</button>
+            <div class="ml-auto flex gap-2">
+            <button type="button" id="cancelDepartmentModalBtn" class="rounded-md bg-white px-4 py-2 text-sm font-semibold text-slate-700 ring-1 ring-slate-300 hover:bg-slate-50">Cancel</button>
+            <button type="submit" id="saveDepartmentBtn" class="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">Save</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      const positionInput = document.getElementById('positionInput');
+      const departmentGrid = document.getElementById('departmentGrid');
+      const departmentModal = document.getElementById('departmentModal');
+      const departmentModalTitle = document.getElementById('departmentModalTitle');
+      const departmentModalForm = document.getElementById('departmentModalForm');
+      const departmentModalError = document.getElementById('departmentModalError');
+      const departmentNameInput = document.getElementById('departmentNameInput');
+      const departmentEmailInput = document.getElementById('departmentEmailInput');
+      const addDepartmentBtn = document.getElementById('addDepartmentBtn');
+      const deleteDepartmentBtn = document.getElementById('deleteDepartmentBtn');
+      const closeDepartmentModalBtn = document.getElementById('closeDepartmentModalBtn');
+      const cancelDepartmentModalBtn = document.getElementById('cancelDepartmentModalBtn');
+      let activeDepartmentId = null;
+
+      function currentCheckboxes() {
+        return Array.from(document.querySelectorAll('input[type="checkbox"][name="department_ids"]'));
+      }
+
+      function currentBU7() {
+        return currentCheckboxes().find(cb => (cb.dataset.deptName || '').toUpperCase().includes('BU7 HEAD'));
+      }
+
+      function applyBU7Rule() {
+        const bu7 = currentBU7();
+        if (!bu7) return;
+        const pos = (positionInput?.value || '').toUpperCase();
+        const shouldInclude = pos.includes('PSR') || pos.includes('DSM');
+        if (shouldInclude) {
+          bu7.checked = true;
+        }
+      }
+
+      function openDepartmentModal(mode, department = null) {
+        activeDepartmentId = department ? department.id : null;
+        departmentModalTitle.textContent = mode === 'edit' ? 'Edit Department' : 'Add Department';
+        departmentNameInput.value = department ? department.name : '';
+        departmentEmailInput.value = department ? (department.email || '') : '';
+        deleteDepartmentBtn.classList.toggle('hidden', mode !== 'edit');
+        departmentModalError.classList.add('hidden');
+        departmentModalError.textContent = '';
+        departmentModal.classList.remove('hidden');
+        departmentModal.classList.add('flex');
+        departmentNameInput.focus();
+      }
+
+      function closeDepartmentModal() {
+        departmentModal.classList.add('hidden');
+        departmentModal.classList.remove('flex');
+        activeDepartmentId = null;
+      }
+
+      function renderDepartmentCard(dept, checked = true) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'department-card flex items-start gap-3 rounded-md border border-slate-200 bg-white px-3 py-2 hover:bg-slate-50';
+        wrapper.dataset.deptId = String(dept.id);
+        wrapper.dataset.deptName = dept.name;
+        wrapper.dataset.deptEmail = dept.email || '';
+        wrapper.innerHTML = `
+          <input type="checkbox" name="department_ids" value="${dept.id}" data-dept-name="${dept.name.replace(/"/g, '&quot;')}" class="mt-1 h-4 w-4 shrink-0" ${checked ? 'checked' : ''} />
+          <div class="min-w-0 flex-1">
+            <div class="text-sm font-semibold text-slate-800">${dept.name}</div>
+            <div class="dept-email mt-1 text-xs text-slate-500">${dept.email || 'No email set'}</div>
+          </div>
+          <button type="button" class="edit-department-btn rounded-md p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-800" aria-label="Edit department">
+            <svg viewBox="0 0 20 20" class="h-4 w-4 fill-current">
+              <path d="M14.7 2.8a1 1 0 0 1 1.4 0l1.1 1.1a1 1 0 0 1 0 1.4l-8.6 8.6-3.2.7.7-3.2 8.6-8.6ZM5.7 12.9l1.4 1.4-.2.8-.8.2-.4-.4.2-.8-.2.8-.4-.4.4-1.6Z"></path>
+              <path d="M3 16.5h14v1H3z"></path>
+            </svg>
+          </button>
+        `;
+        return wrapper;
+      }
+
+      addDepartmentBtn?.addEventListener('click', () => openDepartmentModal('add'));
+      closeDepartmentModalBtn?.addEventListener('click', closeDepartmentModal);
+      cancelDepartmentModalBtn?.addEventListener('click', closeDepartmentModal);
+      departmentModal?.addEventListener('click', (event) => {
+        if (event.target === departmentModal) {
+          closeDepartmentModal();
+        }
+      });
+
+      departmentGrid?.addEventListener('click', (event) => {
+        const button = event.target.closest('.edit-department-btn');
+        if (!button) return;
+        const card = button.closest('.department-card');
+        if (!card) return;
+        openDepartmentModal('edit', {
+          id: card.dataset.deptId,
+          name: card.dataset.deptName || '',
+          email: card.dataset.deptEmail || '',
+        });
+      });
+
+      departmentModalForm?.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const payload = {
+          name: departmentNameInput.value.trim(),
+          email: departmentEmailInput.value.trim(),
+        };
+        const url = activeDepartmentId ? `/departments/${activeDepartmentId}` : '/departments';
+        const existingCard = activeDepartmentId ? departmentGrid.querySelector(`[data-dept-id="${activeDepartmentId}"]`) : null;
+        const wasChecked = existingCard ? Boolean(existingCard.querySelector('input[type="checkbox"]')?.checked) : true;
+
+        try {
+          const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+          const data = await response.json().catch(() => ({}));
+          if (!response.ok) {
+            throw new Error(data.detail || `Request failed (${response.status})`);
+          }
+
+          const card = renderDepartmentCard(data.department, wasChecked);
+          if (existingCard) {
+            existingCard.replaceWith(card);
+          } else {
+            departmentGrid.appendChild(card);
+          }
+          closeDepartmentModal();
+          applyBU7Rule();
+        } catch (error) {
+          departmentModalError.textContent = String(error && error.message ? error.message : error);
+          departmentModalError.classList.remove('hidden');
+        }
+      });
+
+      deleteDepartmentBtn?.addEventListener('click', async () => {
+        if (!activeDepartmentId) return;
+        const card = departmentGrid.querySelector(`[data-dept-id="${activeDepartmentId}"]`);
+        const deptName = card?.dataset.deptName || 'this department';
+        if (!window.confirm(`Remove ${deptName}?`)) return;
+
+        try {
+          const response = await fetch(`/departments/${activeDepartmentId}/delete`, {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+          });
+          const data = await response.json().catch(() => ({}));
+          if (!response.ok) {
+            throw new Error(data.detail || `Request failed (${response.status})`);
+          }
+
+          card?.remove();
+          closeDepartmentModal();
+        } catch (error) {
+          departmentModalError.textContent = String(error && error.message ? error.message : error);
+          departmentModalError.classList.remove('hidden');
+        }
+      });
+
+      positionInput?.addEventListener('input', applyBU7Rule);
+      applyBU7Rule();
+    </script>
+  </body>
+</html>
+

@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/static/img/favicon.png" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>HR Clearance - Status</title>
+  </head>
+  <body class="bg-slate-50 text-slate-900">
+    <div class="mx-auto max-w-6xl px-4 py-8">
+      <div class="mb-6 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <img src="/static/img/InnoGen.png" alt="InnoGen" class="h-10 w-auto" />
+          <div>
+            <div class="text-sm font-semibold text-slate-800">Clearance Status</div>
+            <div class="text-xs text-slate-600">Live progress updates</div>
+          </div>
+        </div>
+        <div class="flex gap-2">
+          <a href="/" class="rounded-md bg-white px-4 py-2 text-sm font-semibold text-slate-700 ring-1 ring-slate-200 hover:bg-slate-100">Create New</a>
+          <a href="/hr-access" class="rounded-md bg-white px-4 py-2 text-sm font-semibold text-slate-700 ring-1 ring-slate-200 hover:bg-slate-100">HR Access</a>
+          <a href="/logout" class="rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800">Logout</a>
+        </div>
+      </div>
+
+      <div class="grid gap-6 lg:grid-cols-3">
+        <div class="lg:col-span-1">
+          <div class="rounded-xl bg-white shadow-sm ring-1 ring-slate-200">
+            <div class="border-b border-slate-200 px-5 py-4">
+              <div class="text-sm font-semibold text-slate-800">Active Clearances</div>
+              <div class="text-xs text-slate-600">Click a record to view details</div>
+            </div>
+            <div id="clearanceList" class="divide-y divide-slate-100"></div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-2">
+          <div class="rounded-xl bg-white shadow-sm ring-1 ring-slate-200">
+            <div class="border-b border-slate-200 px-5 py-4">
+              <div class="flex items-center justify-between gap-4">
+                <div>
+                  <div class="text-sm font-semibold text-slate-800">Clearance Details</div>
+                  <div id="detailSub" class="text-xs text-slate-600"></div>
+                </div>
+                <div id="detailProgress" class="text-xs font-semibold text-slate-700"></div>
+              </div>
+            </div>
+            <div class="p-5">
+              <div id="detailHeader" class="mb-4 hidden rounded-lg border border-slate-200 bg-slate-50 p-4"></div>
+              <div class="overflow-x-auto">
+                <table class="min-w-full border border-slate-300 text-sm">
+                  <thead class="bg-slate-50">
+                    <tr>
+                      <th class="border border-slate-300 px-3 py-2 text-left">DEPARTMENT</th>
+                      <th class="border border-slate-300 px-3 py-2 text-left">NATURE/ITEM</th>
+                      <th class="border border-slate-300 px-3 py-2 text-left">AMOUNT</th>
+                      <th class="border border-slate-300 px-3 py-2 text-left">REASON</th>
+                      <th class="border border-slate-300 px-3 py-2 text-left">STATUS</th>
+                      <th class="border border-slate-300 px-3 py-2 text-left">SIGN LINK</th>
+                    </tr>
+                  </thead>
+                  <tbody id="detailTable" class="bg-white"></tbody>
+                </table>
+              </div>
+              <div id="emptyState" class="mt-6 rounded-lg border border-dashed border-slate-300 p-6 text-center text-sm text-slate-600">
+                Select a clearance record to see progress.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const initialClearanceId = {{ clearance_id if clearance_id else 'null' }};
+
+      function escapeHtml(s) {
+        return String(s ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+      }
+
+      function renderClearanceList(clearances) {
+        const container = document.getElementById('clearanceList');
+        container.innerHTML = '';
+        if (!clearances.length) {
+          container.innerHTML = '<div class="p-5 text-sm text-slate-600">No clearances yet.</div>';
+          return;
+        }
+        for (const c of clearances) {
+          const pct = c.total ? Math.round((c.signed / c.total) * 100) : 0;
+          const active = (window.selectedClearanceId === c.id) ? 'bg-blue-50' : 'bg-white';
+          const el = document.createElement('a');
+          el.href = `/status/${c.id}`;
+          el.className = `block px-5 py-4 hover:bg-slate-50 ${active}`;
+          el.innerHTML = `
+            <div class="flex items-center justify-between gap-4">
+              <div class="min-w-0">
+                <div class="truncate text-sm font-semibold text-slate-800">${escapeHtml(c.employee_name)} <span class="text-xs text-slate-500">(${escapeHtml(c.employee_id)})</span></div>
+                <div class="truncate text-xs text-slate-600">${escapeHtml(c.division_department)} • ${escapeHtml(c.position)}</div>
+              </div>
+              <div class="text-right">
+                <div class="text-xs font-semibold text-slate-800">${c.signed}/${c.total}</div>
+                <div class="text-xs text-slate-600">${pct}%</div>
+              </div>
+            </div>
+            <div class="mt-3 h-2 w-full rounded-full bg-slate-100">
+              <div class="h-2 rounded-full bg-blue-600" style="width:${pct}%"></div>
+            </div>
+          `;
+          container.appendChild(el);
+        }
+      }
+
+      function renderDetail(data) {
+        const empty = document.getElementById('emptyState');
+        const header = document.getElementById('detailHeader');
+        const sub = document.getElementById('detailSub');
+        const progress = document.getElementById('detailProgress');
+        const table = document.getElementById('detailTable');
+
+        const total = data.approvers.length;
+        const signed = data.approvers.filter(a => a.signed).length;
+        const pct = total ? Math.round((signed / total) * 100) : 0;
+
+        empty.classList.add('hidden');
+        header.classList.remove('hidden');
+        sub.textContent = `Clearance #${data.id}`;
+        progress.textContent = `${signed}/${total} signed • ${pct}%`;
+        header.innerHTML = `
+          <div class="grid gap-2 md:grid-cols-2">
+            <div><span class="text-xs font-semibold text-slate-700">Employee:</span> <span class="text-sm font-semibold text-slate-900">${escapeHtml(data.employee_name)}</span> <span class="text-xs text-slate-600">(${escapeHtml(data.employee_id)})</span></div>
+            <div><span class="text-xs font-semibold text-slate-700">Position:</span> <span class="text-sm text-slate-900">${escapeHtml(data.position)}</span></div>
+            <div><span class="text-xs font-semibold text-slate-700">Division/Department:</span> <span class="text-sm text-slate-900">${escapeHtml(data.division_department)}</span></div>
+            <div><span class="text-xs font-semibold text-slate-700">Reason:</span> <span class="text-sm text-slate-900">${escapeHtml(data.reason_for_separation)}</span></div>
+          </div>
+        `;
+
+        table.innerHTML = '';
+        for (const a of data.approvers) {
+          const tr = document.createElement('tr');
+          const status = a.status === 'Signed' ? '✅ Signed' : (a.status === 'Disapproved' ? '⚠️ Disapproved' : '⏳ Pending');
+          const amount = a.accountability_amount == null ? '' : Number(a.accountability_amount).toFixed(2);
+          const signLink = (!a.signed && a.can_open) ? `<a class="text-blue-700 hover:underline" href="${a.sign_url}" target="_blank" rel="noreferrer">Open</a>` : '';
+          tr.innerHTML = `
+            <td class="border border-slate-300 px-3 py-2 font-semibold">${escapeHtml(a.department)}</td>
+            <td class="border border-slate-300 px-3 py-2">${escapeHtml(a.accountability_item)}</td>
+            <td class="border border-slate-300 px-3 py-2">${escapeHtml(amount)}</td>
+            <td class="border border-slate-300 px-3 py-2">${escapeHtml(a.disapproval_reason)}</td>
+            <td class="border border-slate-300 px-3 py-2">${status}</td>
+            <td class="border border-slate-300 px-3 py-2">${signLink}</td>
+          `;
+          table.appendChild(tr);
+        }
+      }
+
+      async function loadAll() {
+        const res = await fetch('/api/clearances');
+        const data = await res.json();
+        renderClearanceList(data.clearances);
+      }
+
+      async function loadDetail(clearanceId) {
+        if (!clearanceId) return;
+        const res = await fetch(`/api/clearances/${clearanceId}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        renderDetail(data);
+      }
+
+      (function init() {
+        const pathParts = window.location.pathname.split('/').filter(Boolean);
+        const maybeId = pathParts.length === 2 && pathParts[0] === 'status' ? Number(pathParts[1]) : null;
+        window.selectedClearanceId = Number.isFinite(maybeId) ? maybeId : initialClearanceId;
+
+        loadAll().then(() => loadDetail(window.selectedClearanceId));
+        setInterval(() => {
+          loadAll().then(() => loadDetail(window.selectedClearanceId));
+        }, 2500);
+      })();
+    </script>
+  </body>
+</html>
+
